@@ -3,9 +3,12 @@ require 'data_mapper'
 require './lib/link'
 require './lib/tag'
 require './lib/user'
+require 'rack-flash'
 
 require_relative './helpers/application.rb'
 require_relative './helpers/datamappers.rb'
+
+use Rack::Flash
 
 env = ENV["RACK_ENV"] || "development"
 
@@ -42,6 +45,11 @@ post '/users' do
     @user = User.create(:email => params[:email], 
               :password => params[:password], 
               :password_confirmation => params[:password_confirmation])
-  session[:user_id] = @user.id
-  redirect to('/')
+    if @user.save
+      session[:user_id] = @user.id
+      redirect to('/')
+    else
+      flash[:notice] = "Sorry, your passwords don't match"
+      erb :"users/new"
+    end  
 end
