@@ -5,14 +5,9 @@ require './lib/tag'
 require './lib/user'
 
 require_relative './helpers/application.rb'
+require_relative './helpers/datamappers.rb'
 
 env = ENV["RACK_ENV"] || "development"
-
-DataMapper.setup(:default, "postgres://localhost/bookmark_manager_#{env}")
-
-DataMapper.finalize
-
-DataMapper.auto_upgrade!
 
 enable :sessions
 set :session_secret, 'super secret'
@@ -45,7 +40,8 @@ end
 
 post '/users' do
     @user = User.create(:email => params[:email], 
-              :password => params[:password])
+              :password => params[:password], 
+              :password_confirmation => params[:password_confirmation])
   session[:user_id] = @user.id
   redirect to('/')
 end
