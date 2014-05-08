@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'sinatra/base'
 require 'data_mapper'
 require './lib/link'
 require './lib/tag'
@@ -52,4 +53,25 @@ post '/users' do
       flash.now[:errors] = @user.errors.full_messages
       erb :"users/new"
     end  
+end
+
+get '/sessions/new' do
+  erb :"sessions/new"
+end
+
+post '/sessions' do
+  email, password = params[:email], params[:password]
+  @user = User.authenticate(email, password)
+  if @user
+    session[:user_id] = @user.id
+    redirect to('/')
+  else
+    flash[:errors] = ["The email or password is incorrect"]
+    erb :"sessions/new"
+  end
+end
+
+delete '/sessions' do
+  session[:user_id] = nil
+  "Good bye!"
 end
