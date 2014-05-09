@@ -79,3 +79,7 @@ end
 get '/forgot_password' do
   erb :forgot_password
 end
+
+post '/forgot_password' do
+  "#{params[:email]}"
+end
